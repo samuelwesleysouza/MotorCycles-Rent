@@ -8,8 +8,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MotorCyclesRentDomain.Entities;
-
-
 using Microsoft.Extensions.Configuration;
 
 namespace MotorCyclesRentInfrastructure.Consumers
@@ -40,40 +38,54 @@ namespace MotorCyclesRentInfrastructure.Consumers
         /// <returns>Tarefa representando a operação assíncrona.</returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var factory = new ConnectionFactory()
+            while (!stoppingToken.IsCancellationRequested)
             {
-                HostName = _configuration["RabbitMQ:HostName"],
-                UserName = _configuration["RabbitMQ:UserName"],
-                Password = _configuration["RabbitMQ:Password"]
-            };
-
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-
-            channel.QueueDeclare(queue: _configuration["RabbitMQ:QueueName"],
-                                 durable: false,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
-
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += async (model, ea) =>
-            {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                var motorcycle = JsonSerializer.Deserialize<Motorcycle>(message);
-
-                if (motorcycle != null && motorcycle.Year == 2024)
+                try
                 {
-                    await SaveMotorcycleToDatabase(motorcycle);
+                    var factory = new ConnectionFactory()
+                    {
+                        HostName = _configuration["RabbitMQ:HostName"],
+                        UserName = _configuration["RabbitMQ:UserName"],
+                        Password = _configuration["RabbitMQ:Password"],
+                        Port = 5672 // Porta padrão do RabbitMQ
+                    };
+
+                    using var connection = factory.CreateConnection();
+                    using var channel = connection.CreateModel();
+
+                    channel.QueueDeclare(queue: _configuration["RabbitMQ:QueueName"],
+                                         durable: false,
+                                         exclusive: false,
+                                         autoDelete: false,
+                                         arguments: null);
+
+                    var consumer = new EventingBasicConsumer(channel);
+                    consumer.Received += async (model, ea) =>
+                    {
+                        var body = ea.Body.ToArray();
+                        var message = Encoding.UTF8.GetString(body);
+                        var motorcycle = JsonSerializer.Deserialize<Motorcycle>(message);
+
+                        if (motorcycle != null && motorcycle.Year == 2024)
+                        {
+                            await SaveMotorcycleToDatabase(motorcycle);
+                        }
+                    };
+
+                    channel.BasicConsume(queue: _configuration["RabbitMQ:QueueName"],
+                                         autoAck: true,
+                                         consumer: consumer);
+
+                    // Aguardar até o token de cancelamento ser sinalizado
+                    await Task.Delay(Timeout.Infinite, stoppingToken);
                 }
-            };
-
-            channel.BasicConsume(queue: _configuration["RabbitMQ:QueueName"],
-                                 autoAck: true,
-                                 consumer: consumer);
-
-            await Task.CompletedTask;
+                catch (Exception ex)
+                {
+                    // Logar exceções e tentar reconectar
+                    Console.WriteLine($"Erro: {ex.Message}");
+                    await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken); // Esperar antes de tentar novamente
+                }
+            }
         }
 
         private async Task SaveMotorcycleToDatabase(Motorcycle motorcycle)
