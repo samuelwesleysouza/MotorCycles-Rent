@@ -31,9 +31,8 @@ builder.Services.AddScoped<MotorcycleRentalService>();
 
 // Configuração do RabbitMQ
 builder.Services.AddSingleton<RabbitMQPublisher>();
-builder.Services.AddHostedService<MotorcycleConsumer>(); 
+builder.Services.AddHostedService<MotorcycleConsumer>();
 
-// Configure autenticação e autorização
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -43,11 +42,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "yourIssuer",
-            ValidAudience = "yourAudience",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("yourSecretKey"))
+            ValidIssuer = builder.Configuration["Jwt:Issuer"], // Correção aqui
+            ValidAudience = builder.Configuration["Jwt:Audience"], // Correção aqui
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Correção aqui
         };
     });
+
 
 builder.Services.AddAuthorization(options =>
 {

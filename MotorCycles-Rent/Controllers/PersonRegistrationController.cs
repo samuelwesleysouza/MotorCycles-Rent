@@ -49,7 +49,7 @@ public class PersonRegistrationsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-   
+    [Authorize(Roles = "Admin")] // Correção aqui
     public async Task<IActionResult> UpdatePersonRegistration(int id, [FromForm] PersonRegistrationRequestDTO dto)
     {
         try
@@ -64,7 +64,7 @@ public class PersonRegistrationsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-   
+    [Authorize(Roles = "Admin")] // Correção aqui
     public async Task<IActionResult> DeletePersonRegistration(int id)
     {
         try

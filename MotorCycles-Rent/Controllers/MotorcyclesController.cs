@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MotorCyclesRentDomain.Dtos.Requests;
 using MotorCyclesRentDomain.Dtos.Responses;
 using System;
@@ -105,6 +106,7 @@ public class MotorcyclesController : ControllerBase
     /// <response code="404">Lançado se a motocicleta não for encontrada.</response>
     /// <response code="409">Lançado se a placa já estiver registrada por outra motocicleta.</response>
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")] // Correção aqui
     public async Task<IActionResult> UpdateMotorcycle(int id, [FromBody] MotorcycleRequestDTO dto)
     {
         if (!ModelState.IsValid)
@@ -139,6 +141,7 @@ public class MotorcyclesController : ControllerBase
     /// <returns>Resposta HTTP com status 204 (No Content) se a motocicleta for removida com sucesso.</returns>
     /// <response code="404">Lançado se a motocicleta não for encontrada.</response>
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")] // Correção aqui
     public async Task<IActionResult> DeleteMotorcycle(int id)
     {
         try

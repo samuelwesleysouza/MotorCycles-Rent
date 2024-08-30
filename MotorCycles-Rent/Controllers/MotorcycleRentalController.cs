@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MotorCyclesRentAplicattion.Services;
 using MotorCyclesRentDomain.Dtos.Requests;
 
@@ -16,6 +17,7 @@ namespace MotorCycles_Rent.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [Route("rent")]
         public async Task<IActionResult> RentMotorcycle([FromBody] RentalRequestDto request)
         {

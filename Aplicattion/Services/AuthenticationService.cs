@@ -68,12 +68,11 @@ namespace MotorCyclesRentAplicattion.Services
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, personRegistration.CPF),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Name, personRegistration.Name),
-                new Claim(ClaimTypes.Role, personRegistration.UserTypeEnum.ToString()) // Inclua a role aqui
-               
-            };
+        new Claim(JwtRegisteredClaimNames.Sub, personRegistration.CPF),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.Name, personRegistration.Name),
+        new Claim(ClaimTypes.Role, personRegistration.UserTypeEnum.ToString()) // Correção aqui
+    };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
