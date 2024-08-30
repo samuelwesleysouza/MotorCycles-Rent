@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotorCyclesRentApi", "MotorCycles-Rent\MotorCyclesRentApi.csproj", "{7F7E7325-9C20-439C-9D91-7B033F22A5C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotorCyclesRentApi", "MotorCyclesRentApi\MotorCyclesRentApi.csproj", "{7F7E7325-9C20-439C-9D91-7B033F22A5C7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotorCyclesRentAplicattion", "Aplicattion\MotorCyclesRentAplicattion.csproj", "{26882C51-9294-48B9-95AD-098CA1AF26B8}"
 EndProject

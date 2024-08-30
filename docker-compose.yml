@@ -7,12 +7,21 @@ services:
       dockerfile: Dockerfile
     container_name: api_service
     ports:
-      - "8080:80"
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
+      - "8080:80" # Mapeia a porta 80 do container para a porta 8080 do host
     networks:
       - app_network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - Jwt__Key=8e9f5c4d29b9d11835f1e59c3a1d9f582a3c1f3e7c5a1f9b2a5c7d3e4e2f1c6f
+      - Jwt__Issuer=samuel
+      - Jwt__Audience=samuel
+      - ConnectionStrings__MotorCyclesConnection=Host=postgres;Port=5432;Database=motorcycles;Username=motorcycles;Password=motorcycles$#@!
+    depends_on:
+      - postgres
+      - rabbitmq
+    volumes:
+      - uploads_data:/app/uploads
 
   postgres:
     image: postgres:latest
@@ -27,6 +36,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U motorcycles -d motorcycles"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
 
   rabbitmq:
     image: rabbitmq:management
@@ -49,6 +64,7 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data: # Adicione esta linha para definir o volume para uploads
 
 networks:
   app_network:

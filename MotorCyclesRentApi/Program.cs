@@ -5,18 +5,18 @@ using Microsoft.IdentityModel.Tokens;
 using MotorCyclesRentAplicattion.Interfaces;
 using MotorCyclesRentAplicattion.Services;
 using MotorCyclesRentInfrastructure;
-using MotorCyclesRentInfrastructure.Messaging; 
-using MotorCyclesRentInfrastructure.Consumers; 
+using MotorCyclesRentInfrastructure.Messaging;
+using MotorCyclesRentInfrastructure.Consumers;
 using System.Text;
 using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure o contexto do banco de dados
+// Configure the database context
 builder.Services.AddDbContext<MotorCyclesContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("MotorCyclesConnection")));
 
-// Registre os serviços
+// Register services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<MotorcycleService>();
 builder.Services.AddScoped<PersonRegistrationService>(provider =>
@@ -25,14 +25,13 @@ builder.Services.AddScoped<PersonRegistrationService>(provider =>
     var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
     return new PersonRegistrationService(context, uploadsFolder);
 });
-
-// Adicione o MotorcycleRentalService
 builder.Services.AddScoped<MotorcycleRentalService>();
 
-// Configuração do RabbitMQ
+// Configure RabbitMQ
 builder.Services.AddSingleton<RabbitMQPublisher>();
 builder.Services.AddHostedService<MotorcycleConsumer>();
 
+// Configure JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -42,19 +41,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"], // Correção aqui
-            ValidAudience = builder.Configuration["Jwt:Audience"], // Correção aqui
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Correção aqui
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
 
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
-        policy.RequireRole("Admin")); 
+        policy.RequireRole("Admin"));
 });
 
-// Configure serviços MVC e Swagger
+// Configure MVC and Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -67,7 +66,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Insira o token JWT no formato: 'Bearer {token}'"
+        Description = "Enter JWT token in the format: 'Bearer {token}'"
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -87,26 +86,37 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Aplicar as migrações do banco de dados
+// Apply database migrations
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<MotorCyclesContext>();
     await dbContext.Database.MigrateAsync();
 }
 
+// Configure the HTTP request pipeline
+app.UseStaticFiles(); // Serve static files from wwwroot
+
+// Ensure Swagger is available in development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "MotorCycles Rent API V1");
-        c.RoutePrefix = string.Empty;
+        c.RoutePrefix = string.Empty; // Swagger UI at root
     });
 }
 
+// Set default route to serve index.html
+app.UseRouting();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapFallbackToFile("index.html"); // Serve index.html as fallback
+});
+
 app.UseHttpsRedirection();
-app.UseAuthentication();  
+app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 
 app.Run();
