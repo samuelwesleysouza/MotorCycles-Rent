@@ -7,7 +7,7 @@ Linguagem: C#
 Framework: .NET (ASP.NET Core)
 Banco de Dados: PostgreSQL
 Sistema de Mensageria: RabbitMQ 
-Armazenamento de Arquivos: (Local Disk, Amazon S3, MinIO, etc.)
+Armazenamento de Arquivos: (Local Disk)
 ORM: Entity Framework Core
 Docker: Para containerização e gerenciamento de ambientes
 Requisitos Funcionais
@@ -56,26 +56,4 @@ Se a data de devolução for inferior à data prevista de término, será cobrad
 Para o plano de 7 dias: 20% sobre o valor das diárias não efetivadas.
 Para o plano de 15 dias: 40% sobre o valor das diárias não efetivadas.
 Se a data de devolução for superior à data prevista de término, será cobrado um valor adicional de R$50,00 por diária adicional.
-Requisitos Não Funcionais
-Documentação
 
-A documentação deve ser completa e clara, incluindo descrições de endpoints, parâmetros, e exemplos de requisições e respostas.
-Documentar as regras de negócio e os casos de uso da aplicação.
-Tratamento de Erros
-
-Implementar tratamento de erros adequado para todas as operações.
-Retornar mensagens de erro informativas e precisas.
-Código Limpo e Organizado
-
-Seguir boas práticas de codificação para garantir um código limpo e fácil de manter.
-Arquitetura e Modelagem de Dados
-
-Utilizar a arquitetura MVC e design patterns adequados para a organização do código.
-Modelar dados de forma eficiente utilizando Entity Framework Core.
-Docker e Docker Compose
-
-Utilizar Docker para a containerização da aplicação e Docker Compose para gerenciar múltiplos containers, se necessário.
-Incluir arquivos Dockerfile e docker-compose.yml no repositório.
-Mensageria
-
-Configurar e integrar um sistema de mensageria (ex.: RabbitMQ) para eventos e notificações.
