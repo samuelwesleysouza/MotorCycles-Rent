@@ -12,30 +12,17 @@ using Microsoft.Extensions.Configuration;
 
 namespace MotorCyclesRentInfrastructure.Consumers
 {
-    /// <summary>
-    /// Consumidor de mensagens do RabbitMQ para motocicletas.
-    /// </summary>
     public class MotorcycleConsumer : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IConfiguration _configuration;
 
-        /// <summary>
-        /// Construtor do consumidor de motocicletas.
-        /// </summary>
-        /// <param name="serviceProvider">Instância do provedor de serviços.</param>
-        /// <param name="configuration">Instância de configuração.</param>
         public MotorcycleConsumer(IServiceProvider serviceProvider, IConfiguration configuration)
         {
             _serviceProvider = serviceProvider;
             _configuration = configuration;
         }
 
-        /// <summary>
-        /// Executa o serviço em segundo plano.
-        /// </summary>
-        /// <param name="stoppingToken">Token de cancelamento para o serviço.</param>
-        /// <returns>Tarefa representando a operação assíncrona.</returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
@@ -47,7 +34,7 @@ namespace MotorCyclesRentInfrastructure.Consumers
                         HostName = _configuration["RabbitMQ:HostName"],
                         UserName = _configuration["RabbitMQ:UserName"],
                         Password = _configuration["RabbitMQ:Password"],
-                        Port = 5672 // Porta padrão do RabbitMQ
+                        Port = 5672
                     };
 
                     using var connection = factory.CreateConnection();
@@ -76,14 +63,12 @@ namespace MotorCyclesRentInfrastructure.Consumers
                                          autoAck: true,
                                          consumer: consumer);
 
-                    // Aguardar até o token de cancelamento ser sinalizado
                     await Task.Delay(Timeout.Infinite, stoppingToken);
                 }
                 catch (Exception ex)
                 {
-                    // Logar exceções e tentar reconectar
                     Console.WriteLine($"Erro: {ex.Message}");
-                    await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken); // Esperar antes de tentar novamente
+                    await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
                 }
             }
         }
@@ -93,9 +78,29 @@ namespace MotorCyclesRentInfrastructure.Consumers
             using var scope = _serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<MotorCyclesContext>();
 
-            // Armazena a motocicleta no banco de dados
-            context.Motorcycles.Add(motorcycle);
-            await context.SaveChangesAsync();
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                var existingMotorcycle = await context.Motorcycles
+                    .FindAsync(motorcycle.Id);
+
+                if (existingMotorcycle == null)
+                {
+                    context.Motorcycles.Add(motorcycle);
+                }
+                else
+                {
+                    existingMotorcycle.UpdateFrom(motorcycle);
+                }
+
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                Console.WriteLine($"Erro ao salvar motocicleta: {ex.Message}");
+            }
         }
     }
 }

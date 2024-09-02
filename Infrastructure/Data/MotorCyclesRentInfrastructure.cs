@@ -8,7 +8,6 @@ namespace MotorCyclesRentInfrastructure
         public MotorCyclesContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<MotorCyclesContext>();
-            // Substitua pela sua string de conexão
             optionsBuilder.UseNpgsql("Host=localhost;Database=motorcycles;Username=motorcycles;Password=motorcycles$#@!");
 
             return new MotorCyclesContext(optionsBuilder.Options);
