@@ -1,14 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
-using MotorCyclesRentAplicattion.Interfaces;
-using MotorCyclesRentAplicattion.Services;
-using MotorCyclesRentInfrastructure;
-using MotorCyclesRentInfrastructure.Messaging;
+using Microsoft.OpenApi.Models;
 using MotorCyclesRentInfrastructure.Consumers;
+using MotorCyclesRentInfrastructure.Messaging;
+using MotorCyclesRentInfrastructure;
 using System.Text;
-using System.IO;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +51,18 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("Admin"));
 });
 
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
 // Configure MVC and Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -95,8 +105,8 @@ using (var scope = app.Services.CreateScope())
 
 // Configure the HTTP request pipeline
 app.UseStaticFiles(); // Serve static files from wwwroot
+app.UseCors("AllowAll"); // Ensure CORS policy is applied
 
-// Ensure Swagger is available in development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -107,16 +117,14 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Set default route to serve index.html
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
     endpoints.MapFallbackToFile("index.html"); // Serve index.html as fallback
 });
-
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.Run();
