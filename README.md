@@ -1,34 +1,42 @@
-🚀 Sistema de Gerenciamento de Aluguel de Motos
-📝 Descrição do Projeto
+# 🚀 Sistema de Gerenciamento de Aluguel de Motos
+
+## 📝 Descrição do Projeto
 O Sistema de Gerenciamento de Aluguel de Motos é uma aplicação para gerenciar o aluguel de motos e o cadastro de entregadores. Ele permite a administração e a gestão de motos, além da locação e gerenciamento por entregadores.
 
-🛠️ Tecnologias Utilizadas
-Linguagem: C#
-Framework: .NET (ASP.NET Core)
-Banco de Dados: PostgreSQL
-Sistema de Mensageria: RabbitMQ
-Armazenamento de Arquivos: Local Disk
-ORM: Entity Framework Core
-Docker: Para containerização
-✅ Requisitos Funcionais
-🏍️ Cadastro e Gerenciamento de Motos
-Cadastrar, Consultar, Modificar e Remover Motos
-🏍️ Cadastro e Gerenciamento de Entregadores
-Cadastrar Entregador e Atualizar Foto da CNH
-🏍️ Locação de Motos
-Alugar, Devolver e Consultar Valor das Motos
-🐳 Como Rodar o Projeto com Docker
-📋 Pré-requisitos
-Certifique-se de ter o Docker e o Docker Compose instalados na sua máquina. Se ainda não os instalou, você pode baixá-los aqui.
+## 🛠️ Tecnologias Utilizadas
+- **Linguagem:** C#
+- **Framework:** .NET (ASP.NET Core)
+- **Banco de Dados:** PostgreSQL
+- **Sistema de Mensageria:** RabbitMQ
+- **Armazenamento de Arquivos:** Local Disk
+- **ORM:** Entity Framework Core
+- **Docker:** Para containerização
 
-🔧 Passos para Iniciar
-Clone o Repositório
+## ✅ Requisitos Funcionais
+### 🏍️ Cadastro e Gerenciamento de Motos
+- Cadastrar, Consultar, Modificar e Remover Motos
 
-Primeiro, clone o repositório do projeto para sua máquina local. Abra um terminal e execute o seguinte comando:
+### 🏍️ Cadastro e Gerenciamento de Entregadores
+- Cadastrar Entregador e Atualizar Foto da CNH
 
-bash
-Copiar código
-git clone <URL_DO_REPOSITORIO>
+### 🏍️ Locação de Motos
+- Alugar, Devolver e Consultar Valor das Motos
+
+## 🐳 Como Rodar o Projeto com Docker
+
+### 📋 Pré-requisitos
+Certifique-se de ter o Docker e o Docker Compose instalados na sua máquina. Se ainda não os instalou, você pode baixá-los [aqui](https://www.docker.com/get-started).
+
+### 🔧 Passos para Iniciar
+
+1. **Clone o Repositório**
+
+   Primeiro, clone o repositório do projeto para sua máquina local. Abra um terminal e execute o seguinte comando:
+
+   ```bash
+   git clone <URL_DO_REPOSITORIO>
+
+
 Em seguida, navegue até o diretório do projeto:
 
 bash
