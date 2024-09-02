@@ -1,106 +1,64 @@
-# 🚀 Sistema de Gerenciamento de Aluguel de Motos
+🚀 Sistema de Gerenciamento de Aluguel de Motos
+📝 Descrição do Projeto
+O Sistema de Gerenciamento de Aluguel de Motos é uma aplicação para gerenciar o aluguel de motos e o cadastro de entregadores. Ele permite a administração e a gestão de motos, além da locação e gerenciamento por entregadores.
 
-## 📝 Descrição do Projeto
+🛠️ Tecnologias Utilizadas
+Linguagem: C#
+Framework: .NET (ASP.NET Core)
+Banco de Dados: PostgreSQL
+Sistema de Mensageria: RabbitMQ
+Armazenamento de Arquivos: Local Disk
+ORM: Entity Framework Core
+Docker: Para containerização
+✅ Requisitos Funcionais
+🏍️ Cadastro e Gerenciamento de Motos
+Cadastrar, Consultar, Modificar e Remover Motos
+🏍️ Cadastro e Gerenciamento de Entregadores
+Cadastrar Entregador e Atualizar Foto da CNH
+🏍️ Locação de Motos
+Alugar, Devolver e Consultar Valor das Motos
+🐳 Como Rodar o Projeto com Docker
+📋 Pré-requisitos
+Certifique-se de ter o Docker e o Docker Compose instalados na sua máquina. Se ainda não os instalou, você pode baixá-los aqui.
 
-O Sistema de Gerenciamento de Aluguel de Motos é uma aplicação destinada ao gerenciamento do aluguel de motos e ao cadastro de entregadores. O sistema permite que administradores cadastrem, modifiquem e removam motos, enquanto entregadores podem se cadastrar, alugar motos e gerenciar suas locações. Além disso, o sistema gerencia eventos de cadastro de motos e assegura que apenas entregadores com habilitação apropriada possam alugar motos.
+🔧 Passos para Iniciar
+Clone o Repositório
 
-## 🛠️ Tecnologias Utilizadas
+Primeiro, clone o repositório do projeto para sua máquina local. Abra um terminal e execute o seguinte comando:
 
-- **Linguagem**: C#
-- **Framework**: .NET (ASP.NET Core)
-- **Banco de Dados**: PostgreSQL
-- **Sistema de Mensageria**: RabbitMQ
-- **Armazenamento de Arquivos**: Local Disk
-- **ORM**: Entity Framework Core
-- **Docker**: Para containerização e gerenciamento de ambientes
+bash
+Copiar código
+git clone <URL_DO_REPOSITORIO>
+Em seguida, navegue até o diretório do projeto:
 
-## ✅ Requisitos Funcionais
-
-### 🏍️ Cadastro de Moto (Admin)
-
-- **Cadastrar Moto**: 
-  - Campos obrigatórios: Identificador, Ano, Modelo, Placa.
-  - A placa deve ser única.
-  - Após o cadastro, deve ser publicado um evento de moto cadastrada via mensageria.
-  - Um consumidor deve ser configurado para notificar e armazenar motos do ano de 2024.
-
-- **Consultar Motos**: 
-  - Permite a consulta e filtragem de motos existentes na plataforma pela placa.
-
-- **Modificar Moto**: 
-  - Permite a alteração da placa de uma moto que foi cadastrada incorretamente.
-
-- **Remover Moto**: 
-  - Permite a remoção de uma moto, desde que não haja registro de locações.
-
-### 🏍️ Cadastro de Entregador (Entregador)
-
-- **Cadastrar Entregador**: 
-  - Campos obrigatórios: Identificador, Nome, CNPJ, Data de Nascimento, Número da CNH, Tipo da CNH, Imagem da CNH.
-  - O CNPJ e o número da CNH devem ser únicos.
-  - Os tipos de CNH válidos são "A", "B" ou "A+B".
-
-- **Atualizar Foto da CNH**: 
-  - Permite o envio e atualização da foto da CNH.
-  - O formato do arquivo deve ser PNG ou BMP.
-  - A foto deve ser armazenada em um serviço de armazenamento (ex.: Amazon S3, MinIO) e não diretamente no banco de dados.
-
-### 🏍️ Locação de Motos (Entregador)
-
-- **Alugar Moto**: 
-  - Planos disponíveis:
-    - 7 dias a R$30,00/dia
-    - 15 dias a R$28,00/dia
-    - 30 dias a R$22,00/dia
-    - 45 dias a R$20,00/dia
-    - 50 dias a R$18,00/dia
-  - A locação deve ter uma data de início e uma data de término. A data de início é obrigatoriamente o primeiro dia após a criação.
-  - Apenas entregadores com habilitação tipo "A" podem alugar motos.
-
-- **Devolução de Moto e Consulta de Valor**: 
-  - Permite informar a data de devolução e consultar o valor total da locação.
-  - Se a data de devolução for inferior à data prevista de término, será cobrada uma multa adicional:
-    - Para o plano de 7 dias: 20% sobre o valor das diárias não efetivadas.
-    - Para o plano de 15 dias: 40% sobre o valor das diárias não efetivadas.
-  - Se a data de devolução for superior à data prevista de término, será cobrado um valor adicional de R$50,00 por diária adicional.
-
-## 🐳 Como Rodar o Projeto com Docker
-
-### 📋 Pré-requisitos
-
-Certifique-se de que você tem o Docker e o Docker Compose instalados na sua máquina. Você pode baixar e instalar o Docker e o Docker Compose a partir do [site oficial do Docker](https://www.docker.com/).
-
-### 🔧 Passos para Iniciar
-
-1. **Clone o Repositório**
-
-   Primeiro, clone o repositório para sua máquina local:
-
-   ```bash
-   git clone <URL_DO_REPOSITORIO>
-   cd <NOME_DIRETORIO_PROJETO>
-Configuração do Ambiente
-
-O projeto já está configurado para usar Docker e Docker Compose. Não é necessário modificar os arquivos de configuração do Docker para iniciar o ambiente.
-
+bash
+Copiar código
+cd <NOME_DIRETORIO_PROJETO>
 Iniciar os Contêineres
 
-Execute o comando abaixo para construir as imagens e iniciar os contêineres:
+O projeto utiliza o Docker Compose para gerenciar os contêineres. Execute o comando abaixo para construir as imagens e iniciar os contêineres:
 
 bash
 Copiar código
 docker-compose up
-Isso fará o Docker baixar as imagens necessárias, construir as imagens personalizadas e iniciar os contêineres para o serviço da API, o banco de dados PostgreSQL e o RabbitMQ.
+Esse comando realiza as seguintes ações:
 
+Baixa a imagem do PostgreSQL para o banco de dados.
+Baixa a imagem do RabbitMQ para o sistema de mensageria.
+Constrói e inicia a imagem da API usando o Dockerfile.
+Configura as variáveis de ambiente necessárias, como usuário, senha e portas.
 Verificar o Status dos Contêineres
 
-Após a execução do comando docker-compose up, você pode verificar o status dos contêineres com o comando:
+Após o comando docker-compose up ser executado, você pode verificar o status dos contêineres com o comando:
 
 bash
 Copiar código
 docker-compose ps
 Acessar a Aplicação
 
-A API estará disponível em http://localhost:8080.
-O RabbitMQ Management Console estará disponível em http://localhost:15672 (Usuário: guest, Senha: guest).
-O PostgreSQL estará disponível na porta 5432, e você pode conectar-se a ele usando a URL de conexão fornecida no Docker Compose.
+API: A API estará disponível em http://localhost:8080.
+RabbitMQ Management Console: O RabbitMQ estará disponível em http://localhost:15672 (Usuário: guest, Senha: guest).
+PostgreSQL: O PostgreSQL estará disponível na porta 5432. Use a URL de conexão fornecida no arquivo docker-compose.yml para conectar-se ao banco de dados.
+Visualizar o Código
+
+Para verificar a estrutura do código e arquivos do projeto, abra o diretório do projeto em uma IDE, como o Visual Studio. Lembre-se de que os arquivos Dockerfile e docker-compose.yml estão localizados na raiz do projeto e não são exibidos diretamente na IDE, mas você pode visualizá-los no seu explorador de arquivos.
